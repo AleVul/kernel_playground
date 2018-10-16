@@ -4,4 +4,11 @@ version = "0.1.0"
 authors = ["Alexandru Vulpea <alexandru.vulpea@gmail.com>"]
 edition = "2018"
 
-[dependencies]
+# To abort on panic instead of unwinding
+# Unwiding requires OS specific libraries so
+# this doesn't make sense in kernel. 
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
