@@ -6,9 +6,17 @@ edition = "2018"
 
 # To abort on panic instead of unwinding
 # Unwiding requires OS specific libraries so
-# this doesn't make sense in kernel. 
+# this doesn't make sense in kernel.
+# Same effect can be achieved per target
+# using `panic-strategy` field in target .json file.
 [profile.dev]
 panic = "abort"
 
 [profile.release]
 panic = "abort"
+
+[dependencies]
+bootloader_precompiled = "0.3.0"
+
+[package.metadata.bootimage]
+default-target = "x86_64-kernel_playground.json"
