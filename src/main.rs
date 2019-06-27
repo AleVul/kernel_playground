@@ -4,8 +4,6 @@
 // Since we dont run over an OS but implement one.
 #![no_main]
 
-extern crate bootloader_precompiled;
-
 use core::panic::PanicInfo;
 
 static HELLO: &[u8] = b"Hello world!";
