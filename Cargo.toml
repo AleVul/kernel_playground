@@ -16,8 +16,9 @@ panic = "abort"
 panic = "abort"
 
 [dependencies]
-bootloader = "0.6.3"
+bootloader = "0.6.4"
 volatile = "0.2.3"
+spin = "0.5.1"
 
 [dependencies.lazy_static]
 version = "1.0"
