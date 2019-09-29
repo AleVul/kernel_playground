@@ -1,7 +1,7 @@
-use volatile::Volatile;
-use lazy_static::lazy_static;
 use core::fmt;
+use lazy_static::lazy_static;
 use spin::Mutex;
+use volatile::Volatile;
 
 const BUFFER_HEIGHT: usize = 25;
 const BUFFER_WIDTH: usize = 80;
@@ -30,17 +30,17 @@ pub enum Color {
 
 /// This struct respresents background/foreground color
 /// for the text in the VGA buffer (it just wraps an `u8`).
-/// 
+///
 /// Thus we use `repr(transparent)` so that it has the same ABI as
 /// an u8 wi9th the added benefits of being a struct that can have methods.
-/// 
+///
 /// see: https://doc.rust-lang.org/nomicon/other-reprs.html#reprtransparent
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use vga_buffer;
-/// 
+///
 /// let color = ColorCode::new(Color::Black, Color::White);
 /// ```
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -56,9 +56,10 @@ impl ColorCode {
 }
 
 impl Default for ColorCode {
-    fn default() -> Self { ColorCode((Color::Black as u8) << 4 | (Color::White as u8)) }
+    fn default() -> Self {
+        ColorCode((Color::Black as u8) << 4 | (Color::White as u8))
+    }
 }
-
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(C)]
@@ -112,7 +113,7 @@ impl Writer {
     }
 
     fn new_line(&mut self) {
-         for row in 1..BUFFER_HEIGHT {
+        for row in 1..BUFFER_HEIGHT {
             for col in 0..BUFFER_WIDTH {
                 let character = self.buffer.chars[row][col].read();
                 self.buffer.chars[row - 1][col].write(character);
@@ -163,4 +164,38 @@ macro_rules! println {
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
     WRITER.lock().write_fmt(args).unwrap();
+}
+
+#[cfg(test)]
+use crate::{serial_print, serial_println};
+
+#[test_case]
+fn test_println_simple() {
+    serial_print!("test_println... ");
+    println!("test_println_simple output");
+    serial_println!("[ok]");
+}
+
+#[test_case]
+fn test_println_many() {
+    serial_print!("test_println_many... ");
+    for _ in 0..200 {
+        println!("test_println_many output");
+    }
+    serial_println!("[ok]");
+}
+
+
+#[test_case]
+fn test_println_output() {
+    serial_print!("test_println_output... ");
+
+    let s = "Some test string that fits on a single line";
+    println!("{}", s);
+    for (i, c) in s.chars().enumerate() {
+        let screen_char = WRITER.lock().buffer.chars[BUFFER_HEIGHT - 2][i].read();
+        assert_eq!(char::from(screen_char.ascii_character), c);
+    }
+
+    serial_println!("[ok]");
 }

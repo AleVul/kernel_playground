@@ -4,22 +4,24 @@ version = "0.1.0"
 authors = ["Alexandru Vulpea <alexandru.vulpea@gmail.com>"]
 edition = "2018"
 
-# To abort on panic instead of unwinding
-# Unwiding requires OS specific libraries so
-# this doesn't make sense in kernel.
-# Same effect can be achieved per target
-# using `panic-strategy` field in target .json file.
-[profile.dev]
-panic = "abort"
-
-[profile.release]
-panic = "abort"
-
 [dependencies]
 bootloader = "0.6.4"
 volatile = "0.2.3"
 spin = "0.5.1"
+x86_64 = "0.7.4"
+uart_16550 = "0.2.0" # to send data over serial port in QEMU
+
+[dev-dependencies]
+uart_16550 = "0.2.0"
 
 [dependencies.lazy_static]
 version = "1.0"
 features = ["spin_no_std"]
+
+[package.metadata.bootimage]
+test-args = ["-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "stdio", "-display", "none"]
+test-success-exit-code = 33         # (0x10 << 1) | 1
+
+[[test]]
+name = "should_panic"
+harness = false
