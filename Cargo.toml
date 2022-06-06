@@ -7,7 +7,7 @@ edition = "2018"
 [dependencies]
 bootloader = "0.6.4"
 volatile = "0.2.3"
-spin = "0.5.1"
+spin = "0.5.2"
 x86_64 = "0.7.4"
 uart_16550 = "0.2.0" # to send data over serial port in QEMU
 
